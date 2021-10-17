@@ -1,0 +1,139 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);
+#include <Servo.h> 
+
+Servo myservo1;
+
+int ir1=5;    //entry gate
+int ir2=6;    //exit gate
+
+int s=9;
+
+ 
+int Space;
+
+
+int val=0;
+int val1=0;
+int count=3;
+int buz=10;
+
+ 
+
+void setup() {
+
+
+pinMode(ir1,INPUT);
+pinMode(ir2,INPUT);
+pinMode(buz,OUTPUT);
+
+myservo1.attach(s);
+
+Serial.begin(9600);
+lcd.begin(16, 2); 
+Serial.println("Setup start");
+myservo1.write(0);     
+
+delay(2000);
+Serial.println("Setup complete");
+
+Serial.println("Car parking system");
+
+ 
+lcd.setCursor (0,0);
+lcd.print("  Car  Parking  ");
+lcd.setCursor (0,1);
+lcd.print("     System     ");
+delay (2000);
+lcd.clear(); 
+
+myservo1.detach();
+} 
+
+void loop() 
+{
+  
+val=digitalRead(ir1);
+
+val1=digitalRead(ir2);
+
+if(val==LOW)
+{
+
+ if(count==0)
+ {
+ 
+  Serial.println("space empty");
+  lcd.setCursor (0,0);
+  lcd.print(" Space Empty ");
+  digitalWrite(buz,HIGH);
+  delay(1000);
+  digitalWrite(buz,LOW);
+  return;
+ }
+  myservo1.attach(s);
+ // delay(1); 
+  myservo1.write(100);  
+  delay(2000);       
+  myservo1.detach();
+  Serial.println("car entered");
+  lcd.setCursor (0,0);
+  lcd.print("car entered");
+  delay(2000);
+  count=count-1;
+  Serial.println("space available :");
+  Serial.println(count);
+  lcd.setCursor(0,0);
+  lcd.print("space available :");
+  lcd.setCursor(0,1);
+  lcd.print(count);
+  }
+else
+{
+ myservo1.attach(s);
+ // delay(1); 
+  myservo1.write(0);  
+  delay(1000);       
+  myservo1.detach(); 
+}
+
+
+if(val1==LOW)
+{
+  
+
+  if(count>=3)
+  {
+    Serial.println("no more cars");
+    count=3;
+  }
+  else
+  {
+  myservo1.attach(s);
+ // delay(1); 
+  myservo1.write(100);  
+  delay(2000);       
+  myservo1.detach();
+  Serial.println("car exited");
+  lcd.setCursor(0,0);
+  lcd.print("Car exited");
+  delay(1000);
+  count=count+1;
+  }
+  Serial.println("space available :");
+  Serial.println(count);
+  lcd.setCursor(0,0);
+  lcd.print("space available :");
+  lcd.setCursor(0,1);
+  lcd.print(count);
+}
+else
+{
+ myservo1.attach(s);
+ // delay(1); 
+  myservo1.write(0);  
+  delay(1000);       
+  myservo1.detach(); 
+}
+
+}
